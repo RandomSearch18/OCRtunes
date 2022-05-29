@@ -21,6 +21,9 @@ def show_menu(options):
     print()
     options[selection]["callback"]()
 
+def get_file(filename):
+    print()
+
 def get_selection(max):
     raw_input = input("Make a selection: ")
     if not raw_input.isnumeric():
@@ -102,6 +105,11 @@ def create_account():
     ])
     accounts_csv.write(account_data)
     accounts_csv.close()
+
+def pick_account():
+    username = text_input("Enter your username: ")
+
+    
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
