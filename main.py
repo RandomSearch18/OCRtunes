@@ -47,7 +47,7 @@ def name_input():
 def date_input(prompt):
     # Ask the user for a YYYY-MM-DD date, and only accept that format
     raw_input = input(f"{prompt}: (YYYY-MM-DD) ").strip()
-    if not re.search("\d{4}-\d{2}-\d{2}", raw_input):
+    if not re.search("^\d{4}-\d{2}-\d{2}$", raw_input):
         print("Please follow the correct format when entering the date!")
         return date_input(prompt)
 
