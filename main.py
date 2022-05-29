@@ -1,28 +1,30 @@
 import re
 from datetime import date
 
+
 def iso_date(parts):
     return "-".join(parts)
 
-def add_option(name, callback, show = None):
-    options.append({
-        "name": name,
-        "callback": callback,
-        "show": show
-    })
+
+def add_option(name, callback, show=None):
+    options.append({"name": name, "callback": callback, "show": show})
+
 
 def show_menu(options):
     for i, option in enumerate(options):
         if option["show"]:
             shouldShow = option["show"](state)
-            if not shouldShow: continue
+            if not shouldShow:
+                continue
         print(f"{i+1}) {option['name']}")
     selection = get_selection(len(options))
     print()
     options[selection]["callback"]()
 
+
 def get_file(filename):
     print()
+
 
 def get_selection(max):
     raw_input = input("Make a selection: ")
@@ -40,12 +42,14 @@ def get_selection(max):
 
     return selection - 1
 
+
 def name_input():
     raw_input = input("Enter your name: ")
     if len(raw_input) < 1:
         print("Your name must be at least one letter!")
         return name_input()
     return raw_input.title()
+
 
 def date_input(prompt):
     # Ask the user for a YYYY-MM-DD date, and only accept that format
@@ -72,8 +76,9 @@ def date_input(prompt):
     if day > 31:
         print("You cannot have a month number greater than 31!")
         return date_input(prompt)
-    
+
     return [year, month, day]
+
 
 def text_input(prompt):
     raw_input = input(prompt)
@@ -81,6 +86,7 @@ def text_input(prompt):
         print("Enter at least one character!")
         return text_input(prompt)
     return raw_input
+
 
 def genre_input(prompt):
     raw_input = text_input(prompt).lower()
@@ -90,6 +96,7 @@ def genre_input(prompt):
         return genre_input(prompt)
     return raw_input
 
+
 def create_account():
     name = name_input()
     birth_date = date_input("Enter your date of birth")
@@ -97,23 +104,20 @@ def create_account():
     favourite_genre = genre_input("Enter your favourite genre: ")
 
     accounts_csv = open("accounts.csv", "a")
-    account_data = ",".join([
-        name,
-        iso_date(birth_date),
-        favourite_artist,
-        favourite_genre
-    ])
+    account_data = ",".join(
+        [name, iso_date(birth_date), favourite_artist, favourite_genre]
+    )
     accounts_csv.write(account_data)
     accounts_csv.close()
+
 
 def pick_account():
     username = text_input("Enter your username: ")
 
-    
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 state = {}
 options = []
-add_option("Create an account", create_account, lambda s : not "user" in state)
+add_option("Create an account", create_account, lambda s: not "user" in state)
 show_menu(options)
