@@ -89,17 +89,32 @@ def get_file(filename):
 
 def update_user(column, value):
     accounts_csv = get_file("accounts.csv")
-    reader = csv.reader(accounts_csv)
-    new_rows = [row for row in reader]
-    for i, row in enumerate(reader):
+    old_rows = accounts_csv.readlines()
+    new_rows = [row for row in old_rows]
+
+    for i, row in enumerate(old_rows):
+        # If the row isn't the one we want, just keep it the same
         if i != column:
             new_rows.append(row)
-        new_rows[column] = value
+            continue
+
+        # Get the columns and make sure that the requested column isn't out of range
+        columns = row.strip().split(",")
+        if len(columns) <= column:
+            raise IndexError(
+                f"Cannot modify column number {column} in a row with {len(columns)} columns!"
+            )
+
+        # Update the column we want with the new value
+        columns[column] = value
+        new_rows.append(",".join(columns) + "\n")
     accounts_csv.close()
 
+    # Overwrite the file with all the new rows
     accounts_csv = open("accounts.csv", "w")
-    writer = csv.writer(accounts_csv)
-    writer.writerows(new_rows)
+    print(new_rows)
+    for row in new_rows:
+        accounts_csv.write(row)
     accounts_csv.close()
 
 
