@@ -42,6 +42,22 @@ def get_file(filename):
         return open(filename, "r")
 
 
+def update_user(column, value):
+    accounts_csv = get_file("accounts.csv")
+    reader = csv.reader(accounts_csv)
+    rows = [row for row in reader]
+    for i, row in enumerate(rows):
+        if row[0] == state["user"]["name"]:
+            rows[i][column] = value
+            break
+    accounts_csv.close()
+
+    accounts_csv = open("accounts.csv", "w")
+    writer = csv.writer(accounts_csv)
+    writer.writerows(rows)
+    accounts_csv.close()
+
+
 def get_selection(max):
     raw_input = input("Make a selection: ")
     if not raw_input.isnumeric():
@@ -154,8 +170,23 @@ def pick_account():
     print(f'Successfully logged in to account "{name}": welcome back to OCRtunes!')
 
 
+def edit_artist():
+    current_artist = state["user"]["favourite_artist"]
+    print(f'Your favourite artist is currently set to "{current_artist}"')
+    new_artist = text_input("Enter your new favourite artist: ")
+
+    # Update local (in-memory) user data
+    state["user"]["favourite_artist"] = new_artist
+    # 2 is the index of the favourite artist column
+    update_user(2, new_artist)
+    print(f'Successfully changed your favourite artist to "{new_artist}"')
+
+
 def edit_interests():
-    1
+    add_option, show_menu = create_menu()
+    add_option("Edit favourite artist", edit_artist)
+    add_option("Edit favourite genre", edit_genre)
+    show_menu()
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
