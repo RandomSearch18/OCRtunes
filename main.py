@@ -13,13 +13,15 @@ def create_menu(title=None):
     def add_option(name, callback, show=None):
         options.append({"name": name, "callback": callback, "show": show})
 
-    def show_menu():
+    def show_menu(loop=False):
         relevant_options = []
         for option in options:
             if option["show"]:
                 shouldShow = option["show"](state)
                 if shouldShow:
                     relevant_options.append(option)
+            else:
+                relevant_options.append(option)
 
         if len(relevant_options) == 0:
             print("No options available. Goodbye!")
@@ -37,8 +39,11 @@ def create_menu(title=None):
         print()
         index = selection - 1
         relevant_options[index]["callback"]()
+
+        if not loop:
+            return
         print("\n")
-        show_menu()
+        show_menu(loop)
 
     return add_option, show_menu
 
@@ -223,4 +228,4 @@ add_option, show_menu = create_menu("=== OCRtunes Main Menu ===")
 add_option("Create an account", create_account, lambda _: not "user" in state)
 add_option("Log in", pick_account, lambda _: not "user" in state)
 add_option("Edit interests", edit_interests, lambda _: "user" in state)
-show_menu()
+show_menu(True)
