@@ -91,7 +91,7 @@ def update_user(column, value):
     accounts_csv = get_file("accounts.csv")
     reader = csv.reader(accounts_csv)
     new_rows = [row for row in reader]
-    for i, row in enumerate(new_rows):
+    for i, row in enumerate(reader):
         if i != column:
             new_rows.append(row)
         new_rows[column] = value
