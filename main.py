@@ -36,7 +36,7 @@ def create_menu(title=None):
 
         print()
         index = selection - 1
-        options[index]["callback"]()
+        relevant_options[index]["callback"]()
         print("\n")
         show_menu()
 
