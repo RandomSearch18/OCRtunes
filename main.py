@@ -1,6 +1,7 @@
 import re
 from datetime import date
 import csv
+import random
 
 
 def iso_date(parts):
@@ -17,7 +18,7 @@ def create_menu(title=None):
         relevant_options = []
         for option in options:
             if option["show"]:
-                shouldShow = option["show"](state)
+                shouldShow = option["show"]()
                 if shouldShow:
                     relevant_options.append(option)
             else:
@@ -149,6 +150,31 @@ def genre_input(prompt):
     return raw_input
 
 
+def print_heading():
+    cyan = "\x1b[36m"
+    reset = "\x1b[0m"
+    blue = "\x1b[1;34m"
+    ASCII_ART = """\
+ _____  _____ ______  _                            
+|  _  |/  __ \| ___ \| |                           
+| | | || /  \/| |_/ /| |_  _   _  _ __    ___  ___ 
+| | | || |    |    / | __|| | | || '_ \  / _ \/ __|
+\ \_/ /| \__/\| |\ \ | |_ | |_| || | | ||  __/\__ \\
+ \___/  \____/\_| \_| \__| \__,_||_| |_| \___||___/"""
+    TAGLINES = [
+        "Find your new favourite artist with OCRtunes.",
+        "If you can't find it on OCtunes, it doesn't exist.",
+        "Music to your ears",
+        "Your perfect playlist, every time.",
+    ]
+    print(blue + ASCII_ART + reset)
+    ascii_art_width = 51
+    tagline = random.choice(TAGLINES)
+    padding_width = (ascii_art_width - len(tagline)) // 2
+    print(padding_width * " " + cyan + tagline + reset)
+    print()
+
+
 def create_account():
     name = name_input()
     birth_date = date_input("Enter your date of birth")
@@ -215,17 +241,14 @@ def edit_interests():
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
-TAGLINES = [
-    "Find your new favourite artist with OCRtunes.",
-    "If you can't find it on OCtunes, it doesn't exist.",
-    "Music to your ears",
-    "Your perfect playlist, every time.",
-]
 
+""" Global store for the state of the program (e.g. currently logged-in user) """
 state = {}
 
+print_heading()
 add_option, show_menu = create_menu("=== OCRtunes Main Menu ===")
-add_option("Create an account", create_account, lambda _: not "user" in state)
-add_option("Log in", pick_account, lambda _: not "user" in state)
-add_option("Edit interests", edit_interests, lambda _: "user" in state)
+add_option("Create an account", create_account, lambda: not "user" in state)
+add_option("Log in", pick_account, lambda: not "user" in state)
+add_option("Log out", lambda: state.pop("user"), lambda: "user" in state)
+add_option("Edit interests", edit_interests, lambda: "user" in state)
 show_menu(True)
