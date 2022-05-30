@@ -7,22 +7,38 @@ def iso_date(parts):
     return "-".join([str(part) for part in parts])
 
 
-def create_menu():
+def create_menu(title=None):
     options = []
 
     def add_option(name, callback, show=None):
         options.append({"name": name, "callback": callback, "show": show})
 
     def show_menu():
-        for i, option in enumerate(options):
+        relevant_options = []
+        for option in options:
             if option["show"]:
                 shouldShow = option["show"](state)
-                if not shouldShow:
-                    continue
+                if shouldShow:
+                    relevant_options.append(option)
+
+        if len(relevant_options) == 0:
+            print("No options available. Goodbye!")
+            return
+
+        if title:
+            print(title)
+        for i, option in enumerate(relevant_options):
             print(f"{i+1}) {option['name']}")
+
         selection = get_selection(len(options))
+        if selection == 0:
+            return
+
         print()
-        options[selection]["callback"]()
+        index = selection - 1
+        options[index]["callback"]()
+        print("\n")
+        show_menu()
 
     return add_option, show_menu
 
@@ -61,18 +77,18 @@ def update_user(column, value):
 def get_selection(max):
     raw_input = input("Make a selection: ")
     if not raw_input.isnumeric():
-        print("Your selection must be a number!")
+        print("Your selection must be a positive number!")
         return get_selection(max)
 
     selection = int(raw_input)
-    if selection < 1:
-        print("Select a positive number! (Greater than zero)")
+    if selection < 0:
+        print("Select a positive number!")
         return get_selection(max)
     if selection > max:
         print("Selection out of bounds: Must be below", max)
         return get_selection(max)
 
-    return selection - 1
+    return selection
 
 
 def name_input():
@@ -182,6 +198,10 @@ def edit_artist():
     print(f'Successfully changed your favourite artist to "{new_artist}"')
 
 
+def edit_genre():
+    pass
+
+
 def edit_interests():
     add_option, show_menu = create_menu()
     add_option("Edit favourite artist", edit_artist)
@@ -190,10 +210,16 @@ def edit_interests():
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
+TAGLINES = [
+    "Find your new favourite artist with OCRtunes.",
+    "If you can't find it on OCtunes, it doesn't exist.",
+    "Music to your ears",
+    "Your perfect playlist, every time.",
+]
 
 state = {}
 
-add_option, show_menu = create_menu()
+add_option, show_menu = create_menu("=== OCRtunes Main Menu ===")
 add_option("Create an account", create_account, lambda _: not "user" in state)
 add_option("Log in", pick_account, lambda _: not "user" in state)
 add_option("Edit interests", edit_interests, lambda _: "user" in state)
