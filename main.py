@@ -61,16 +61,16 @@ def get_file(filename):
 def update_user(column, value):
     accounts_csv = get_file("accounts.csv")
     reader = csv.reader(accounts_csv)
-    rows = [row for row in reader]
-    for i, row in enumerate(rows):
-        if row[0] == state["user"]["name"]:
-            rows[i][column] = value
-            break
+    new_rows = [row for row in reader]
+    for i, row in enumerate(new_rows):
+        if i != column:
+            new_rows.append(row)
+        new_rows[column] = value
     accounts_csv.close()
 
     accounts_csv = open("accounts.csv", "w")
     writer = csv.writer(accounts_csv)
-    writer.writerows(rows)
+    writer.writerows(new_rows)
     accounts_csv.close()
 
 
