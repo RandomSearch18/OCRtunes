@@ -1,8 +1,11 @@
+from email.policy import default
 import re
 from datetime import date
 import csv
 import random
 from inspect import signature
+
+from click import prompt
 
 
 def iso_date(parts):
@@ -158,8 +161,10 @@ def date_input(prompt):
     return [year, month, day]
 
 
-def text_input(prompt):
+def text_input(prompt, default=None):
     raw_input = input(prompt)
+    if default and raw_input == "":
+        return default
     if not raw_input:
         print("Enter at least one character!")
         return text_input(prompt)
@@ -200,9 +205,7 @@ def print_heading():
     print()
 
 
-def create_account(add_cleanup):
-    add_cleanup(lambda: print("Cleaning up!"))
-
+def create_account():
     name = name_input()
     birth_date = date_input("Enter your date of birth")
     favourite_artist = text_input("Enter your favourite artist: ")
@@ -235,7 +238,11 @@ def get_account(username):
 
 
 def pick_account():
-    username = text_input("Enter your name: ").title()
+    default = state["old_user"] if "old_user" in state else ""
+    prompt_suffix = f"({default}) " if default else ""
+    prompt = "Enter your name: " + prompt_suffix
+
+    username = text_input(prompt, default).title()
     matched_account = get_account(username)
     if not matched_account:
         print("Could not find an account with that name!")
@@ -252,6 +259,7 @@ def log_out():
     except KeyboardInterrupt:
         return print(color_wrap(" Aborted!", COLOR_RED))
 
+    state["old_user"] = state["user"]["name"]
     state.pop("user")
     print("Successfully logged out!")
 
