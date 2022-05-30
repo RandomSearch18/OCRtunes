@@ -2,10 +2,15 @@ import re
 from datetime import date
 import csv
 import random
+from inspect import signature
 
 
 def iso_date(parts):
     return "-".join([str(part) for part in parts])
+
+
+def color_wrap(string, color):
+    return f"{color}{string}\033[0m"
 
 
 def create_menu(title=None):
@@ -15,6 +20,11 @@ def create_menu(title=None):
         options.append({"name": name, "callback": callback, "show": show})
 
     def show_menu(loop=False):
+        def add_cleanup(cleanup):
+            cleanups.append(cleanup)
+
+        cleanups = []
+
         relevant_options = []
         for option in options:
             if option["show"]:
@@ -39,7 +49,17 @@ def create_menu(title=None):
 
         print()
         index = selection - 1
-        relevant_options[index]["callback"]()
+        callback = relevant_options[index]["callback"]
+        try:
+            # Only give the callback function an argument if it wants one
+            parameters = len(signature(callback).parameters)
+            callback() if parameters == 0 else callback(add_cleanup)
+        except KeyboardInterrupt:
+            message = "Aborting..." if len(cleanups) else "Aborted!"
+            print(color_wrap("\n" + message, COLOR_RED))
+        finally:
+            for cleanup in cleanups:
+                cleanup()
 
         if not loop:
             return
@@ -81,7 +101,12 @@ def update_user(column, value):
 
 
 def get_selection(max):
-    raw_input = input("Make a selection: ")
+    try:
+        raw_input = input("Make a selection: ")
+    except KeyboardInterrupt:
+        print(color_wrap(" Selection cancelled!", COLOR_RED))
+        return 0
+
     if not raw_input.isnumeric():
         print("Your selection must be a positive number!")
         return get_selection(max)
@@ -196,12 +221,14 @@ def get_account(username):
     reader = csv.reader(accounts_csv)
     for account in reader:
         if account[0] == username:
+            accounts_csv.close()
             return {
                 "name": account[0],
                 "birth_date": account[1],
                 "favourite_artist": account[2],
                 "favourite_genre": account[3],
             }
+    accounts_csv.close()
     return None
 
 
@@ -215,6 +242,16 @@ def pick_account():
     state["user"] = matched_account
     name = state["user"]["name"]
     print(f'Successfully logged in to account "{name}": welcome back to OCRtunes!')
+
+
+def log_out():
+    try:
+        input("Press enter to log out...")
+    except KeyboardInterrupt:
+        return print(color_wrap(" Aborted!", COLOR_RED))
+
+    state.pop("user")
+    print("Successfully logged out!")
 
 
 def edit_artist():
@@ -242,6 +279,8 @@ def edit_interests():
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
+COLOR_RED = "\x1b[31m"
+
 """ Global store for the state of the program (e.g. currently logged-in user) """
 state = {}
 
@@ -249,6 +288,6 @@ print_heading()
 add_option, show_menu = create_menu("=== OCRtunes Main Menu ===")
 add_option("Create an account", create_account, lambda: not "user" in state)
 add_option("Log in", pick_account, lambda: not "user" in state)
-add_option("Log out", lambda: state.pop("user"), lambda: "user" in state)
+add_option("Log out", log_out, lambda: "user" in state)
 add_option("Edit interests", edit_interests, lambda: "user" in state)
 show_menu(True)
