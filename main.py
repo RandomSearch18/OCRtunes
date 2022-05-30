@@ -7,20 +7,24 @@ def iso_date(parts):
     return "-".join([str(part) for part in parts])
 
 
-def add_option(name, callback, show=None):
-    options.append({"name": name, "callback": callback, "show": show})
+def create_menu():
+    options = []
 
+    def add_option(name, callback, show=None):
+        options.append({"name": name, "callback": callback, "show": show})
 
-def show_menu(options):
-    for i, option in enumerate(options):
-        if option["show"]:
-            shouldShow = option["show"](state)
-            if not shouldShow:
-                continue
-        print(f"{i+1}) {option['name']}")
-    selection = get_selection(len(options))
-    print()
-    options[selection]["callback"]()
+    def show_menu():
+        for i, option in enumerate(options):
+            if option["show"]:
+                shouldShow = option["show"](state)
+                if not shouldShow:
+                    continue
+            print(f"{i+1}) {option['name']}")
+        selection = get_selection(len(options))
+        print()
+        options[selection]["callback"]()
+
+    return add_option, show_menu
 
 
 def new_record(*columns):
@@ -148,13 +152,18 @@ def pick_account():
     state["user"] = matched_account
     name = state["user"]["name"]
     print(f'Successfully logged in to account "{name}": welcome back to OCRtunes!')
-    print(state)
+
+
+def edit_interests():
+    1
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 state = {}
-options = []
+
+add_option, show_menu = create_menu()
 add_option("Create an account", create_account, lambda _: not "user" in state)
 add_option("Log in", pick_account, lambda _: not "user" in state)
-show_menu(options)
+add_option("Edit interests", edit_interests, lambda _: "user" in state)
+show_menu()
