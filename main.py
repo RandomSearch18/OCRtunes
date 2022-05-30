@@ -1,9 +1,10 @@
 import re
 from datetime import date
+import csv
 
 
 def iso_date(parts):
-    return "-".join(parts)
+    return "-".join([str(part) for part in parts])
 
 
 def add_option(name, callback, show=None):
@@ -22,8 +23,19 @@ def show_menu(options):
     options[selection]["callback"]()
 
 
+def new_record(*columns):
+    record = ",".join([str(column) for column in columns])
+    return record + "\n"
+
+
 def get_file(filename):
-    print()
+    try:
+        return open(filename, "r")
+    except FileNotFoundError:
+        # Create the file if it doesn't exist
+        file = open(filename, "w")
+        file.close()
+        return open(filename, "r")
 
 
 def get_selection(max):
@@ -63,7 +75,6 @@ def date_input(prompt):
     year = int(input_parts[0])
     month = int(input_parts[1])
     day = int(input_parts[2])
-    print(input_parts)
 
     # Basic date validation because dates are hard
     current_year = date.today().year
@@ -102,22 +113,48 @@ def create_account():
     birth_date = date_input("Enter your date of birth")
     favourite_artist = text_input("Enter your favourite artist: ")
     favourite_genre = genre_input("Enter your favourite genre: ")
+    print("Thank you! Creating your account...")
 
     accounts_csv = open("accounts.csv", "a")
-    account_data = ",".join(
-        [name, iso_date(birth_date), favourite_artist, favourite_genre]
+    account_data = new_record(
+        name, iso_date(birth_date), favourite_artist, favourite_genre
     )
     accounts_csv.write(account_data)
     accounts_csv.close()
+    print("Successfully created account: welcome to OCRtunes!")
+
+
+def get_account(username):
+    accounts_csv = get_file("accounts.csv")
+    reader = csv.reader(accounts_csv)
+    for account in reader:
+        if account[0] == username:
+            return {
+                "name": account[0],
+                "birth_date": account[1],
+                "favourite_artist": account[2],
+                "favourite_genre": account[3],
+            }
+    return None
 
 
 def pick_account():
-    username = text_input("Enter your username: ")
+    username = text_input("Enter your name: ").title()
+    matched_account = get_account(username)
+    if not matched_account:
+        print("Could not find an account with that name!")
+        return pick_account()
+
+    state["user"] = matched_account
+    name = state["user"]["name"]
+    print(f'Successfully logged in to account "{name}": welcome back to OCRtunes!')
+    print(state)
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 state = {}
 options = []
-add_option("Create an account", create_account, lambda s: not "user" in state)
+add_option("Create an account", create_account, lambda _: not "user" in state)
+add_option("Log in", pick_account, lambda _: not "user" in state)
 show_menu(options)
