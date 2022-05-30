@@ -200,7 +200,9 @@ def print_heading():
     print()
 
 
-def create_account():
+def create_account(add_cleanup):
+    add_cleanup(lambda: print("Cleaning up!"))
+
     name = name_input()
     birth_date = date_input("Enter your date of birth")
     favourite_artist = text_input("Enter your favourite artist: ")
