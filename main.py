@@ -87,10 +87,22 @@ def get_file(filename):
         return open(filename, "r")
 
 
+def reload_user():
+    """Brings the in-memory state up-to-date with the accounts.csv"""
+    username = state["user"]["name"]
+    matched_account = get_account(username)
+
+    if not matched_account:
+        raise LookupError(f'Couldn\'t find an account with the name "{username}"!')
+
+    state["user"] = matched_account
+
+
 def update_user(column, value):
     accounts_csv = get_file("accounts.csv")
     old_rows = accounts_csv.readlines()
     new_rows = []
+    matched = False
 
     for row in old_rows:
         columns = row.strip().split(",")
@@ -98,6 +110,8 @@ def update_user(column, value):
         if columns[0] != state["user"]["name"]:
             new_rows.append(row)
             continue
+
+        matched = True
 
         if len(columns) <= column:
             raise IndexError(
@@ -107,6 +121,9 @@ def update_user(column, value):
         columns[column] = value
         new_rows.append(",".join(columns) + "\n")
     accounts_csv.close()
+
+    if not matched:
+        raise LookupError(f"Account no longer exists in the accounts.csv file!")
 
     # Overwrite the file with all the new rows
     accounts_csv = open("accounts.csv", "w")
@@ -281,10 +298,8 @@ def edit_artist():
     print(f'Your favourite artist is currently set to "{current_artist}"')
     new_artist = text_input("Enter your new favourite artist: ")
 
-    # Update local (in-memory) user data
-    state["user"]["favourite_artist"] = new_artist
-    # 2 is the index of the favourite artist column
-    update_user(2, new_artist)
+    update_user(2, new_artist)  # 2 is the index of the favourite artist column
+    reload_user()
     print(f'Successfully changed your favourite artist to "{new_artist}"')
 
 
@@ -303,7 +318,7 @@ GENRES = ["pop", "rock", "hip hop", "rap"]
 
 COLOR_RED = "\x1b[31m"
 
-""" Global store for the state of the program (e.g. currently logged-in user) """
+# Global store for the state of the program (e.g. currently logged-in user)
 state = {}
 
 print_heading()
