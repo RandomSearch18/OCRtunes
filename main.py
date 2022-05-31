@@ -1,15 +1,19 @@
-from email.policy import default
 import re
 from datetime import date
 import csv
 import random
 from inspect import signature
 
-from click import prompt
-
 
 def iso_date(parts):
     return "-".join([str(part) for part in parts])
+
+
+def parse_seconds(seconds):
+    seconds = int(seconds)
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{minutes}:{seconds:02}"
 
 
 def color_wrap(string, color):
@@ -266,6 +270,34 @@ def get_account(username):
     return None
 
 
+def get_library():
+    try:
+        library_csv = open("library.csv", "r")
+    except FileNotFoundError:
+        raise FileNotFoundError("Could not access library.csv!")
+
+    songs = []
+
+    for song in csv.reader(library_csv):
+        if len(song) < 5:
+            raise LookupError(
+                f"Song {song[0]} in library.csv does not have all the required fields!"
+            )
+
+        songs.append(
+            {
+                "id": song[0],
+                "artist": song[1],
+                "title": song[2],
+                "length": song[3],
+                "genre": song[4],
+            }
+        )
+
+    library_csv.close()
+    return songs
+
+
 def pick_account():
     default = state["old_user"] if "old_user" in state else ""
     prompt_suffix = f"({default}) " if default else ""
@@ -320,6 +352,19 @@ def edit_interests():
     show_menu()
 
 
+def sort_library():
+    library_data = get_library()
+    library_data.sort(key=lambda song: song["title"].lower())
+    return library_data
+
+
+def song_library():
+    library = sort_library()
+
+    for song in library:
+        print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
+
+
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 COLOR_RED = "\x1b[31m"
@@ -333,4 +378,5 @@ add_option("Create an account", create_account, lambda: not "user" in state)
 add_option("Log in", pick_account, lambda: not "user" in state)
 add_option("Log out", log_out, lambda: "user" in state)
 add_option("Edit interests", edit_interests, lambda: "user" in state)
+add_option("Display song library", song_library)
 show_menu(True)
