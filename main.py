@@ -50,7 +50,7 @@ def create_menu(title=None):
         for i, option in enumerate(relevant_options):
             print(f"{i+1}) {option['name']}")
 
-        selection = get_selection(len(options))
+        selection = get_selection(len(relevant_options))
         if selection == 0:
             return
 
