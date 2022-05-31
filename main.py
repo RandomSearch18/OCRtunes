@@ -304,7 +304,13 @@ def edit_artist():
 
 
 def edit_genre():
-    pass
+    current_genre = state["user"]["favourite_genre"]
+    print(f'Your favourite genre is currently set to "{current_genre}"')
+    new_genre = genre_input("Enter your new favourite genre: ")
+
+    update_user(3, new_genre)  # 3 is the index of the favourite genre column
+    reload_user()
+    print(f'Successfully changed your favourite genre to "{new_genre}"')
 
 
 def edit_interests():
