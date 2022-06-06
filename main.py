@@ -204,6 +204,25 @@ def text_input(prompt, default=None):
     return raw_input
 
 
+def time_input(prompt):
+    raw_input = input(prompt)
+    if not raw_input:
+        print("You have to enter something!")
+        return time_input(prompt)
+    elif re.search("\d+:\d+", raw_input):
+        parts = raw_input.split(":")
+        minutes = int(raw_input[0])
+        seconds = int(raw_input[1])
+    elif raw_input.replace(".", "").isnumeric():
+        print(raw_input.replace(".", "").isnumeric())
+        minutes = float(raw_input[0])
+    else:
+        print("Enter a number!")
+        return time_input(prompt)
+
+    return minutes + (seconds / 60)
+
+
 def genre_input(prompt):
     raw_input = text_input(prompt).lower()
     if not raw_input in GENRES:
@@ -365,6 +384,10 @@ def song_library():
         print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
 
 
+def generate_playlist():
+    time_limit = time_input("Maximum run time of playlist: (mins) ")
+
+
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 COLOR_RED = "\x1b[31m"
@@ -379,4 +402,5 @@ add_option("Log in", pick_account, lambda: not "user" in state)
 add_option("Log out", log_out, lambda: "user" in state)
 add_option("Edit interests", edit_interests, lambda: "user" in state)
 add_option("Display song library", song_library)
+add_option("Generate playlist", generate_playlist, lambda: "user" in state)
 show_menu(True)
