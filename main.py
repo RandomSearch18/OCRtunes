@@ -392,6 +392,14 @@ def song_library():
         print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
 
 
+def get_short_songs(max_length):
+    songs = get_library()
+    matching_songs = []
+    for song in songs:
+        if song["length"] =< max_length:
+            matching_songs.append(song)
+
+
 def generate_playlist():
     playlist = []
     songs = get_library()
@@ -402,6 +410,7 @@ def generate_playlist():
     checked_songs = 0
     print("Generating playlist...")
     while not done:
+        possible_songs = get_short_songs(max_seconds)
         chosen_song = random.choice(songs)
         checked_songs += 1
         print(chosen_song['length'], full_run_time, max_seconds)
