@@ -1,8 +1,8 @@
-import re
+from inspect import signature
 from datetime import date
+import re
 import csv
 import random
-from inspect import signature
 
 
 def iso_date(parts):
@@ -205,7 +205,10 @@ def text_input(prompt, default=None):
 
 
 def time_input(prompt):
-    raw_input = input(prompt)
+    minutes = 0
+    seconds = 0
+    raw_input = input(f"{prompt}: (mins) ")
+    
     if not raw_input:
         print("You have to enter something!")
         return time_input(prompt)
@@ -305,16 +308,21 @@ def get_library():
 
         songs.append(
             {
-                "id": song[0],
+                "id": int(song[0]),
                 "artist": song[1],
                 "title": song[2],
-                "length": song[3],
+                "length": int(song[3]),
                 "genre": song[4],
             }
         )
 
     library_csv.close()
     return songs
+
+def get_song(id):
+    songs = get_library()
+    for song in songs:
+        if song["id"]: 1
 
 
 def pick_account():
@@ -385,7 +393,32 @@ def song_library():
 
 
 def generate_playlist():
-    time_limit = time_input("Maximum run time of playlist: (mins) ")
+    playlist = []
+    songs = get_library()
+    time_limit = time_input("Maximum run time of playlist")
+    max_seconds = time_limit * 60
+    full_run_time = 0
+    done = False
+    checked_songs = 0
+    print("Generating playlist...")
+    while not done:
+        chosen_song = random.choice(songs)
+        checked_songs += 1
+        print(chosen_song['length'], full_run_time, max_seconds)
+        if checked_songs == len(songs):
+            # We've run out of songs!
+            break
+        if full_run_time + chosen_song['length'] > max_seconds:
+            # Adding this song would make the playlist too long
+            break
+        playlist.append(chosen_song["id"])
+        full_run_time += chosen_song['length']
+
+    length = parse_seconds(full_run_time)
+    print(f"Successfully made a playlist with {len(playlist)} songs! (Run time: {length})")
+    input("Press enter to view playlist...")
+    
+        
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
