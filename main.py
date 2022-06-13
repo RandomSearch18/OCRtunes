@@ -321,7 +321,9 @@ def get_library():
 def get_song(id):
     songs = get_library()
     for song in songs:
-        if song["id"]: 1
+        if song["id"] == id:
+            return song
+    raise LookupError(f"Could not find a song in the library with an ID of {id}")
 
 
 def pick_account():
