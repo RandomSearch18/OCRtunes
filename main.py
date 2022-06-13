@@ -214,11 +214,10 @@ def time_input(prompt):
         return time_input(prompt)
     elif re.search("\d+:\d+", raw_input):
         parts = raw_input.split(":")
-        minutes = int(raw_input[0])
-        seconds = int(raw_input[1])
+        minutes = int(parts[0])
+        seconds = int(parts[1])
     elif raw_input.replace(".", "").isnumeric():
-        print(raw_input.replace(".", "").isnumeric())
-        minutes = float(raw_input[0])
+        minutes = float(raw_input)
     else:
         print("Enter a number!")
         return time_input(prompt)
@@ -385,18 +384,21 @@ def sort_library():
     return library_data
 
 
+def print_song(song):
+    print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
+
+
 def song_library():
     library = sort_library()
-
     for song in library:
-        print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
+        print_song(song)
 
 
 def get_short_songs(max_length):
     songs = get_library()
     matching_songs = []
     for song in songs:
-        if song["length"] =< max_length:
+        if song["length"] <= max_length:
             matching_songs.append(song)
 
 
@@ -404,6 +406,7 @@ def generate_playlist():
     playlist = []
     songs = get_library()
     time_limit = time_input("Maximum run time of playlist")
+    print(time_limit, time_limit * 60)
     max_seconds = time_limit * 60
     full_run_time = 0
     done = False
@@ -426,8 +429,9 @@ def generate_playlist():
     length = parse_seconds(full_run_time)
     print(f"Successfully made a playlist with {len(playlist)} songs! (Run time: {length})")
     input("Press enter to view playlist...")
-    
-        
+
+    for song in playlist:
+        print_song(song)
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
