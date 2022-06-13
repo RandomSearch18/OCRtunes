@@ -402,6 +402,7 @@ def get_short_songs(max_length):
     for song in songs:
         if song["length"] <= max_length:
             matching_songs.append(song)
+    return matching_songs
 
 
 def generate_playlist():
@@ -416,6 +417,11 @@ def generate_playlist():
     print("Generating playlist...")
     while not done:
         possible_songs = get_short_songs(max_seconds)
+        
+        if len(possible_songs) == 0:
+            print("Couldn't find any songs that are that short!")
+            return
+        
         chosen_song = random.choice(songs)
         checked_songs += 1
         if checked_songs == len(songs):
