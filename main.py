@@ -408,17 +408,16 @@ def generate_playlist():
     playlist = []
     songs = get_library()
     time_limit = time_input("Maximum run time of playlist")
-    print(time_limit, time_limit * 60)
     max_seconds = time_limit * 60
     full_run_time = 0
     done = False
     checked_songs = 0
+    print()
     print("Generating playlist...")
     while not done:
         possible_songs = get_short_songs(max_seconds)
         chosen_song = random.choice(songs)
         checked_songs += 1
-        print(chosen_song['length'], full_run_time, max_seconds)
         if checked_songs == len(songs):
             # We've run out of songs!
             break
@@ -428,8 +427,8 @@ def generate_playlist():
         playlist.append(chosen_song["id"])
         full_run_time += chosen_song['length']
 
-    length = parse_seconds(full_run_time)
-    print(f"Successfully made a playlist with {len(playlist)} songs! (Run time: {length})")
+    print(f"Successfully made a playlist with {len(playlist)} songs!")
+    print(f"Playlist run time is {parse_seconds(full_run_time)}")
     input("Press enter to view playlist...")
 
     for song_id in playlist:
