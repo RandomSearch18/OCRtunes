@@ -430,8 +430,8 @@ def generate_playlist():
     print(f"Successfully made a playlist with {len(playlist)} songs! (Run time: {length})")
     input("Press enter to view playlist...")
 
-    for song in playlist:
-        print_song(song)
+    for song_id in playlist:
+        print_song(get_song(song_id))
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
