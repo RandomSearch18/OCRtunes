@@ -234,47 +234,6 @@ def genre_input(prompt):
     return raw_input
 
 
-def print_heading():
-    cyan = "\x1b[36m"
-    reset = "\x1b[0m"
-    blue = "\x1b[1;34m"
-    ASCII_ART = """\
- _____  _____ ______  _                            
-|  _  |/  __ \| ___ \| |                           
-| | | || /  \/| |_/ /| |_  _   _  _ __    ___  ___ 
-| | | || |    |    / | __|| | | || '_ \  / _ \/ __|
-\ \_/ /| \__/\| |\ \ | |_ | |_| || | | ||  __/\__ \\
- \___/  \____/\_| \_| \__| \__,_||_| |_| \___||___/"""
-    TAGLINES = [
-        "Find your new favourite artist with OCRtunes.",
-        "If you can't find it on OCtunes, it doesn't exist.",
-        "Music to your ears",
-        "Your perfect playlist, every time.",
-    ]
-    print(blue + ASCII_ART + reset)
-    ascii_art_width = 51
-    tagline = random.choice(TAGLINES)
-    padding_width = (ascii_art_width - len(tagline)) // 2
-    print(padding_width * " " + cyan + tagline + reset)
-    print()
-
-
-def create_account():
-    name = name_input()
-    birth_date = date_input("Enter your date of birth")
-    favourite_artist = text_input("Enter your favourite artist: ")
-    favourite_genre = genre_input("Enter your favourite genre: ")
-    print("Thank you! Creating your account...")
-
-    accounts_csv = open("accounts.csv", "a")
-    account_data = new_record(
-        name, iso_date(birth_date), favourite_artist, favourite_genre
-    )
-    accounts_csv.write(account_data)
-    accounts_csv.close()
-    print("Successfully created account: welcome to OCRtunes!")
-
-
 def get_account(username):
     accounts_csv = get_file("accounts.csv")
     reader = csv.reader(accounts_csv)
@@ -324,6 +283,57 @@ def get_song(id):
         if song["id"] == id:
             return song
     raise LookupError(f"Could not find a song in the library with an ID of {id}")
+
+def get_songs_from_artist(artist):
+    songs = get_library()
+    matching_songs = []
+    
+    for song in songs:
+        if song["artist"] == id:
+            matching_songs.append(song)
+
+    return matching_songs
+
+
+def print_heading():
+    cyan = "\x1b[36m"
+    reset = "\x1b[0m"
+    blue = "\x1b[1;34m"
+    ASCII_ART = """\
+ _____  _____ ______  _                            
+|  _  |/  __ \| ___ \| |                           
+| | | || /  \/| |_/ /| |_  _   _  _ __    ___  ___ 
+| | | || |    |    / | __|| | | || '_ \  / _ \/ __|
+\ \_/ /| \__/\| |\ \ | |_ | |_| || | | ||  __/\__ \\
+ \___/  \____/\_| \_| \__| \__,_||_| |_| \___||___/"""
+    TAGLINES = [
+        "Find your new favourite artist with OCRtunes.",
+        "If you can't find it on OCtunes, it doesn't exist.",
+        "Music to your ears",
+        "Your perfect playlist, every time.",
+    ]
+    print(blue + ASCII_ART + reset)
+    ascii_art_width = 51
+    tagline = random.choice(TAGLINES)
+    padding_width = (ascii_art_width - len(tagline)) // 2
+    print(padding_width * " " + cyan + tagline + reset)
+    print()
+
+
+def create_account():
+    name = name_input()
+    birth_date = date_input("Enter your date of birth")
+    favourite_artist = text_input("Enter your favourite artist: ")
+    favourite_genre = genre_input("Enter your favourite genre: ")
+    print("Thank you! Creating your account...")
+
+    accounts_csv = open("accounts.csv", "a")
+    account_data = new_record(
+        name, iso_date(birth_date), favourite_artist, favourite_genre
+    )
+    accounts_csv.write(account_data)
+    accounts_csv.close()
+    print("Successfully created account: welcome to OCRtunes!")
 
 
 def pick_account():
