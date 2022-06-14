@@ -234,6 +234,21 @@ def genre_input(prompt):
     return raw_input
 
 
+def artist_input(prompt):
+    library = get_library()
+    valid_artists = set()
+
+    for song in library:
+        valid_artists.add(song["artist"])
+    
+    raw_input = text_input(prompt)
+    if raw_input not in valid_artists:
+        artists_sample = list(valid_artists)[5:]
+        print("There aren't any songs with that artist!")
+        print("Some possible artists include:", ", ".join(artists_sample))
+        artist_input(prompt)
+
+
 def get_account(username):
     accounts_csv = get_file("accounts.csv")
     reader = csv.reader(accounts_csv)
@@ -451,6 +466,11 @@ def generate_playlist():
         print_song(get_song(song_id))
 
 
+def export_songs():
+    print("This allows you to enter an artist's name and save all their songs to  a text file.")
+    artist_input("Artist: ")
+
+
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
 COLOR_RED = "\x1b[31m"
@@ -466,4 +486,5 @@ add_option("Log out", log_out, lambda: "user" in state)
 add_option("Edit interests", edit_interests, lambda: "user" in state)
 add_option("Display song library", song_library)
 add_option("Generate playlist", generate_playlist, lambda: "user" in state)
+add_option("Export songs from an artist", export_songs)
 show_menu(True)
