@@ -491,6 +491,7 @@ def export_songs():
     filepath = new_file_input("Filename: ")
     
     file = filepath.open("w")
+    file.close()
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
