@@ -1,5 +1,6 @@
 from inspect import signature
 from datetime import date
+from pathlib import Path
 import re
 import csv
 import random
@@ -252,11 +253,14 @@ def artist_input(prompt):
 
 def new_file_input(prompt):
     raw_input = text_input(prompt)
+    filepath = Path(raw_input)
     
-    if os.path.isfile(raw_input):
+    if filepath.is_file():
         print("There's already a file at that location!")
-    elif os.path.exists(raw_input):
+    elif filepath.is_dir():
         print("That filepath is a directory!")
+    elif filepath.exists():
+        print("Something already exists at that location!")
 
     return raw_input
 
@@ -479,10 +483,9 @@ def generate_playlist():
 
 
 def export_songs():
-    print("This allows you to enter an artist's name and save all their songs to  a text file.")
+    print("This allows you to enter an artist's name and save all their songs to a text file.")
     artist = artist_input("Artist: ")
     filename = new_file_input("Filename: ")
-    artist_input("Artist: ")
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
