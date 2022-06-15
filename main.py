@@ -340,7 +340,7 @@ def get_songs_from_artist(artist):
     matching_songs = []
     
     for song in songs:
-        if song["artist"] == id:
+        if song["artist"] == artist:
             matching_songs.append(song)
 
     return matching_songs
@@ -491,8 +491,15 @@ def export_songs():
     print("This allows you to enter an artist's name and save all their songs to a text file.")
     artist = artist_input("Artist: ")
     filepath = new_file_input("Filename: ")
+
+    matching_songs = get_songs_from_artist(artist)
+    if len(matching_songs) == 0:
+        print("Could not find any songs that match that artist! (This is a bug in artist_input() or get_songs_from_artist())")
+        return
     
     file = filepath.open("w")
+    for song in matching_songs:
+        file.write(song["title"] + "\n")
     file.close()
 
 
