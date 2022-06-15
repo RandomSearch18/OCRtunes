@@ -3,6 +3,7 @@ from datetime import date
 import re
 import csv
 import random
+import os
 
 
 def iso_date(parts):
@@ -249,6 +250,17 @@ def artist_input(prompt):
         artist_input(prompt)
 
 
+def new_file_input(prompt):
+    raw_input = text_input(prompt)
+    
+    if os.path.isfile(raw_input):
+        print("There's already a file at that location!")
+    elif os.path.exists(raw_input):
+        print("That filepath is a directory!")
+
+    return raw_input
+
+
 def get_account(username):
     accounts_csv = get_file("accounts.csv")
     reader = csv.reader(accounts_csv)
@@ -468,6 +480,8 @@ def generate_playlist():
 
 def export_songs():
     print("This allows you to enter an artist's name and save all their songs to  a text file.")
+    artist = artist_input("Artist: ")
+    filename = new_file_input("Filename: ")
     artist_input("Artist: ")
 
 
