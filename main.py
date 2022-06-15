@@ -311,12 +311,29 @@ def get_library():
     library_csv.close()
     return songs
 
+
+def sort_library():
+    library_data = get_library()
+    library_data.sort(key=lambda song: song["title"].lower())
+    return library_data
+
+
 def get_song(id):
     songs = get_library()
     for song in songs:
         if song["id"] == id:
             return song
     raise LookupError(f"Could not find a song in the library with an ID of {id}")
+
+
+def get_short_songs(max_length):
+    songs = get_library()
+    matching_songs = []
+    for song in songs:
+        if song["length"] <= max_length:
+            matching_songs.append(song)
+    return matching_songs
+
 
 def get_songs_from_artist(artist):
     songs = get_library()
@@ -327,6 +344,10 @@ def get_songs_from_artist(artist):
             matching_songs.append(song)
 
     return matching_songs
+
+
+def print_song(song):
+    print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
 
 
 def print_heading():
@@ -424,29 +445,10 @@ def edit_interests():
     show_menu()
 
 
-def sort_library():
-    library_data = get_library()
-    library_data.sort(key=lambda song: song["title"].lower())
-    return library_data
-
-
-def print_song(song):
-    print(f"{song['title']} ({song['artist']}) ({parse_seconds(song['length'])})")
-
-
 def song_library():
     library = sort_library()
     for song in library:
         print_song(song)
-
-
-def get_short_songs(max_length):
-    songs = get_library()
-    matching_songs = []
-    for song in songs:
-        if song["length"] <= max_length:
-            matching_songs.append(song)
-    return matching_songs
 
 
 def generate_playlist():
