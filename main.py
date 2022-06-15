@@ -488,7 +488,9 @@ def generate_playlist():
 def export_songs():
     print("This allows you to enter an artist's name and save all their songs to a text file.")
     artist = artist_input("Artist: ")
-    filename = new_file_input("Filename: ")
+    filepath = new_file_input("Filename: ")
+    
+    file = filepath.open("w")
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
