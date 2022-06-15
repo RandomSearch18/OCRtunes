@@ -248,7 +248,9 @@ def artist_input(prompt):
         artists_sample = list(valid_artists)[5:]
         print("There aren't any songs with that artist!")
         print("Some possible artists include:", ", ".join(artists_sample))
-        artist_input(prompt)
+        return artist_input(prompt)
+
+    return raw_input
 
 
 def new_file_input(prompt):
@@ -340,6 +342,7 @@ def get_songs_from_artist(artist):
     matching_songs = []
     
     for song in songs:
+        print(song["artist"], artist)
         if song["artist"] == artist:
             matching_songs.append(song)
 
