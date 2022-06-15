@@ -261,8 +261,11 @@ def new_file_input(prompt):
         print("That filepath is a directory!")
     elif filepath.exists():
         print("Something already exists at that location!")
+    else:
+        return raw_input
 
-    return raw_input
+    # Show the prompt again if the input was invalid
+    return new_file_input(prompt)
 
 
 def get_account(username):
