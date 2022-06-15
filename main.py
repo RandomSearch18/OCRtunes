@@ -342,7 +342,6 @@ def get_songs_from_artist(artist):
     matching_songs = []
     
     for song in songs:
-        print(song["artist"], artist)
         if song["artist"] == artist:
             matching_songs.append(song)
 
@@ -504,6 +503,9 @@ def export_songs():
     for song in matching_songs:
         file.write(song["title"] + "\n")
     file.close()
+
+    count = len(matching_songs)
+    print(f"Successfully saved {count} song(s) from \"{artist}\" to file: {filepath}")
 
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
