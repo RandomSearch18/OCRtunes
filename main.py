@@ -262,7 +262,7 @@ def new_file_input(prompt):
     elif filepath.exists():
         print("Something already exists at that location!")
     else:
-        return raw_input
+        return filepath
 
     # Show the prompt again if the input was invalid
     return new_file_input(prompt)
