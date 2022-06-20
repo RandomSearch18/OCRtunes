@@ -7,6 +7,10 @@ import random
 import os
 
 
+def binary_choice():
+    return random.choice([True, False])
+
+
 def iso_date(parts):
     return "-".join([str(part) for part in parts])
 
@@ -328,12 +332,16 @@ def get_song(id):
     raise LookupError(f"Could not find a song in the library with an ID of {id}")
 
 
-def get_short_songs(max_length):
+def get_short_songs(max_length, exclude=[]):
     songs = get_library()
     matching_songs = []
     for song in songs:
+        for excluded_id in exclude:
+            if excluded_id == song["id"]:
+                continue
         if song["length"] <= max_length:
             matching_songs.append(song)
+        
     return matching_songs
 
 
@@ -464,11 +472,24 @@ def generate_playlist():
     print()
     print("Generating playlist...")
     while not done:
-        possible_songs = get_short_songs(max_seconds)
-        
+        possible_songs = get_short_songs(max_seconds, playlist)
+
         if len(possible_songs) == 0:
-            print("Couldn't find any songs that are that short!")
+            print("There aren't any songs that are that short!")
             return
+        
+        acceptable_songs = []
+
+        use_favorite_genre = binary_choice()
+        if use_favorite_genre:
+            for song in possible_songs:
+                if song["genre"] == state["user"]["favourite_genre"]:
+                    acceptable_songs.append(song)
+
+        if len(acceptable_songs) == 0:
+            # There aren't any songs of the correct genre,
+            # or use_favorite_genre is False
+            acceptable_songs = possible_songs
         
         chosen_song = random.choice(songs)
         checked_songs += 1
@@ -485,6 +506,7 @@ def generate_playlist():
     print(f"Playlist run time is {parse_seconds(full_run_time)}")
     input("Press enter to view playlist...")
 
+    print()
     for song_id in playlist:
         print_song(get_song(song_id))
 
