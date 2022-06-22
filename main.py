@@ -68,12 +68,11 @@ def create_menu(title=None):
             print(f"{i+1}) {option['name']}")
 
         selection = get_selection(len(relevant_options))
-        if selection == 0:
-            # Exit the menu if the user entered "0" (cancel selection)
+        if selection == -1:
+            # Exit the menu if the user entered "0" (to cancel the selection)
             return
 
         print()
-        index = selection - 1
         callback = relevant_options[index]["callback"]
         try:
             # Only give the callback function an argument if it wants one
@@ -159,7 +158,7 @@ def get_selection(max):
         raw_input = input("Make a selection: ")
     except KeyboardInterrupt:
         print(color_wrap(" Selection cancelled!", COLOR_RED))
-        return 0
+        return -1
 
     if not raw_input.isnumeric():
         print("Your selection must be a positive number!")
@@ -173,6 +172,9 @@ def get_selection(max):
         print("Selection out of bounds: Must be below", max)
         return get_selection(max)
 
+    # Subtract one from the selection, since the user is given options that are
+    # indexed from 1, but we want them to be zero-indexed
+    selection -= 1
     return selection
 
 
