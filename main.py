@@ -178,14 +178,17 @@ def get_selection(max):
     return selection
 
 
-def name_input():
-    raw_input = input("Enter your name: ")
-    if len(raw_input) < 1:
-        print("Your name must be at least one letter!")
-        return name_input()
-    return raw_input.title()
+"""Asks the user for some input and validates that they actually entered something"""
+def text_input(prompt, default=None):
+    raw_input = input(prompt)
+    if default != None and raw_input == "":
+        return default
+    if not raw_input:
+        print("Enter at least one character!")
+        return text_input(prompt)
+    return raw_input
 
-
+"""Asks the suer for some input in the YYYY-MM-DD format, validates the format, paritally validates the date, parses it, and returns it as an array in the form [year, month, day]."""
 def date_input(prompt):
     # Ask the user for a YYYY-MM-DD date, and only accept that format
     raw_input = input(f"{prompt}: (YYYY-MM-DD) ").strip()
@@ -200,6 +203,7 @@ def date_input(prompt):
     day = int(input_parts[2])
 
     # Basic date validation because dates are hard
+    # TODO: Don't look at this again
     current_year = date.today().year
     if year > current_year:
         print(f"The provided year is {year - current_year} years in the future!")
@@ -213,17 +217,9 @@ def date_input(prompt):
 
     return [year, month, day]
 
-
-def text_input(prompt, default=None):
-    raw_input = input(prompt)
-    if default and raw_input == "":
-        return default
-    if not raw_input:
-        print("Enter at least one character!")
-        return text_input(prompt)
-    return raw_input
-
-
+"""Asks the user for some input, in minutes. Accepts two formats of input:
+a) A number of minutes as a decimal: e.g. '52', '8.1'
+b) A number of minutes and seconds spereated by a colon: e.g '2:30'"""
 def time_input(prompt):
     minutes = 0
     seconds = 0
@@ -244,7 +240,16 @@ def time_input(prompt):
 
     return minutes + (seconds / 60)
 
+"""Asks the user for their name. Returns their input in title case."""
+def name_input():
+    raw_input = input("Enter your name: ")
+    if len(raw_input) < 1:
+        print("Your name must be at least one letter!")
+        return name_input()
+    return raw_input.title()
 
+
+"""Asks the user for some input. Their input must be a valid genre."""
 def genre_input(prompt):
     raw_input = text_input(prompt).lower()
     if not raw_input in GENRES:
@@ -254,6 +259,7 @@ def genre_input(prompt):
     return raw_input
 
 
+"""Asks the user for some input. Their input must match an artist found in the song library."""
 def artist_input(prompt):
     library = get_library()
     valid_artists = set()
