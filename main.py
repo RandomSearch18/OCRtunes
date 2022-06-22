@@ -157,7 +157,7 @@ def get_selection(max):
     try:
         raw_input = input("Make a selection: ")
     except KeyboardInterrupt:
-        print(color_wrap(" Selection cancelled!", COLOR_RED))
+        print(color_wrap("Selection cancelled!", COLOR_RED))
         return -1
 
     if not raw_input.isnumeric():
