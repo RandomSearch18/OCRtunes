@@ -11,10 +11,12 @@ def binary_choice():
     return random.choice([True, False])
 
 
+"""Converts an array in the format [year, month, day] to the ISO data format"""
 def iso_date(parts):
     return "-".join([str(part) for part in parts])
 
 
+"""Takes length of time, in seconds and converts it to a string in the format MM:SS"""
 def parse_seconds(seconds):
     seconds = int(seconds)
     minutes = seconds // 60
@@ -22,17 +24,26 @@ def parse_seconds(seconds):
     return f"{minutes}:{seconds:02}"
 
 
+"""Applies an ANSI colour code to a string"""
 def color_wrap(string, color):
     return f"{color}{string}\033[0m"
 
 
+"""System for creating a menu with multiple options that the user can pick from"""
 def create_menu(title=None):
     options = []
 
+    """Add an option to the menu.
+    name: The text that is shown to the user, in the menu
+    callback: The function to run when the user selects the option
+    show: An optional function that can return False to prevent the option from being shown
+    """
     def add_option(name, callback, show=None):
         options.append({"name": name, "callback": callback, "show": show})
 
+    """Show the menu (once you've added all the options)"""
     def show_menu(loop=False):
+        """Cleanup functions run once the menu item callback is done, i.e. if the function ends normally or if it's cancelled by the user with ^C. Useful for things like closing files."""
         def add_cleanup(cleanup):
             cleanups.append(cleanup)
 
@@ -58,6 +69,7 @@ def create_menu(title=None):
 
         selection = get_selection(len(relevant_options))
         if selection == 0:
+            # Exit the menu if the user entered "0" (cancel selection)
             return
 
         print()
@@ -532,6 +544,7 @@ def export_songs():
 
 GENRES = ["pop", "rock", "hip hop", "rap"]
 
+# Terminal colour codes
 COLOR_RED = "\x1b[31m"
 
 # Global store for the state of the program (e.g. currently logged-in user)
