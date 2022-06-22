@@ -73,7 +73,7 @@ def create_menu(title=None):
             return
 
         print()
-        callback = relevant_options[index]["callback"]
+        callback = relevant_options[selection]["callback"]
         try:
             # Only give the callback function an argument if it wants one
             parameters = len(signature(callback).parameters)
